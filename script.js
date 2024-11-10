@@ -147,7 +147,6 @@ function moveObstacle(obstacle) {
                 obstacleSpeed += 0.33; // Increase speed every 5 points 
             }
         } 
-        // Collision logic: ensure obstacle is not already below the car
         else if (
             obstacleTop + 90 >= carTop &&
             obstacleTop < carBottom &&
