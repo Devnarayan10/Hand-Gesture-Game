@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <div id="container">
+        <div id="videoContainer" style="display: none;">
+            <video id="video" autoplay></video>
+            <div class="lane" id="leftLane"></div>
+            <div class="lane" id="middleLane"></div>
+            <div class="lane" id="rightLane"></div>
+        </div>
+        <div id="game" style="display: none;">
+            <div id="score">Score: 0</div>
+            <div id="car"></div>
+            <div id="obstacles"></div>
+        </div>
+    </div>
+    <div id="startScreen">
+        <h1>Welcome to the Car Game!</h1>
+        <button id="startButton">Start Game</button>
+        <div id="howToPlay">
+            <h2>HOW TO PLAY</h2>
+            <p>
+                On the right side of the screen, you'll see your video. To make your car
+                move to the right lane, move your hand to the right in the screen. To make
+                your car move to the left lane, move your hand to the left, and to move
+                your car to the center lane, move your hand to the middle of the screen.
+            </p>
+        </div>
+    </div>
+    <div id="gameOver" style="display: none;">
+        <h1>Game Over!</h1>
+        <p>Your score: <span id="finalScore">0</span></p>
+        <button id="restartButton">Restart Game</button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
