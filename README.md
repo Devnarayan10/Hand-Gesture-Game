@@ -7,3 +7,4 @@ Team Alpha
 
 Hand gesture-based game where you have to avoid incoming obstacles by moving your hand side by side. 
 Three lanes are present - left, right and middle.
+Made for Scribbler Pad JS Hackathon.
