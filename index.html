@@ -1,257 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Game</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-	<style>
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+{
+  "metadata": {
+    "name": "New JSNB",
+    "language_info": {
+      "name": "JavaScipt",
+      "version": "8.0"
+    }
+  },
+  "jsnbversion": "v0.1",
+  "cells": [
+    {
+      "code": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Car Game</title>\n    <script src=\"https://cdn.jsdelivr.net/npm/@tensorflow/tfjs\"></script>\n    <link href=\"https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap\" rel=\"stylesheet\">\n    <script src=\"https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose\"></script>\n\t \n<style>\n\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    flex-direction: column;\n    height: 100vh;\n    background-color: #e5a6fc;\n}\n\n#container {\n    display: flex;\n    align-items: flex-start;\n    position: relative;\n}\n\n#videoContainer {\n    position: relative;\n    width: 400px;\n    height: 300px;\n    overflow: hidden;\n}\n\n#game {\n    position: relative;\n    width: 327px;\n    height: 607px;\n    border: 4px solid #333;\n    overflow: hidden;\n    margin-left: 20px;\n    background: #565656;\n    z-index: 1;\n}\n\n#game::before,\n#game::after {\n    content: '';\n    position: absolute;\n    top: 0;\n    height: 100%;\n    width: 2.3px; \n    z-index: 2;\n}\n\n#game::before {\n    left: 33.33%;\n    background-image: linear-gradient(to bottom, white 50%, transparent 50%);\n    background-size: 0.6rem 3.7rem; \n}\n\n#game::after {\n    left: 66.66%;\n    background-image: linear-gradient(to bottom, white 50%, transparent 50%);\n    background-size: 0.6rem 3.7rem; \n}\n\n#score {\n    font-size: 24px; \n    color: #fffcfc; \n    position: absolute;\n    top: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    z-index: 10;\n    display: none;\n}\n\n#car {\n    position: absolute;\n    bottom: 20px;\n    left: 120px; \n    width: 55px; \n    height: 90px; \n    object-fit: cover;\n    overflow: hidden;\n}\n\n\n\n.obstacle {\n    position: absolute;\n    width: 55px; \n    height: 90px;\n    background-image: url('https://static.thenounproject.com/png/3914609-200.png'); /* Car image */\n    background-size: cover;\n    background-position: center;\n    background-repeat: no-repeat;\n    transform: scaleY(-1);\n}\n\n\nvideo {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n.lane {\n    position: absolute;\n    width: 33.33%;\n    height: 100%;\n    opacity: 0;\n}\n\n#leftLane {\n    background-color: rgba(0, 255, 0, 0.5);\n    left: 0;\n}\n\n#middleLane {\n    background-color: rgba(255, 255, 0, 0.5);\n    left: 33.33%;\n}\n\n#rightLane {\n    background-color: rgba(255, 0, 0, 0.5);\n    left: 66.66%;\n}\n\n#startScreen, #gameOver {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center;\n    height: 100vh;\n    background-color: #e5a6fc;\n}\n\n#startButton, #restartButton {\n    padding: 10px 20px;\n    font-size: 16px;\n    cursor: pointer;\n    background-color: #f471b2; \n    margin-top: 20px;\n    margin-bottom: 33px;\n}\n\n#gameOver {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center;\n    height: 100vh;\n    background-color: #e5a6fc;\n    text-align: center; \n}\n\n#gameOver h1 {\n    font-size: 2.5rem; \n    color: #333; \n    margin-bottom: 20px; \n    font-family: 'Luckiest Guy', cursive;\n}\n\n#finalScore {\n    font-size: 2rem; \n    font-weight: bold;\n    color: #000000; \n    margin-bottom: 30px;\n}\n\n#howToPlay {\n    margin-top: 20px;\n    text-align: justify; \n    max-width: 600px; \n    margin-top: 40px;\n  \tfont-size: 0.99rem;\n\tfont-family: 'Luckiest Guy', cursive; \n}\n\n#howToPlay h2 {\n    margin-bottom: 10px; \n    font-size: 1.99rem;\n\tfont-family: 'Luckiest Guy', cursive; \n}\n\n#howToPlay p {\n    line-height: 1.5; \n    color: #333; \n    font-size: 0.99rem;\n\tfont-family: 'Luckiest Guy', cursive; \n}\n\n\n#startScreen h1 {\n    font-size: 5rem; \n    color: #333; \n    margin-bottom: 20px; \n    font-family: 'Luckiest Guy', cursive; \n}\n\n#startButton, #restartButton {\n    padding: 15px 30px; \n    font-size: 18px; \n    color: #fff;\n    border: none; \n    border-radius: 5px;\n    cursor: pointer;\n    transition: background-color 0.3s; \n}\n\n#startButton:hover {\n    background-color: #ff1493; \n}\n#restartButton:hover {\n    background-color: #ff1493; \n}\n</style>\n</head>\n<body>\n    <div id=\"container\">\n        <div id=\"videoContainer\" style=\"display: none;\">\n            <video id=\"video\" autoplay></video>\n            <div class=\"lane\" id=\"leftLane\"></div>\n            <div class=\"lane\" id=\"middleLane\"></div>\n            <div class=\"lane\" id=\"rightLane\"></div>\n        </div>\n        <div id=\"game\" style=\"display: none;\">\n            <div id=\"score\">Score: 0</div>\n            <img id=\"car\" src=\"https://www.svgrepo.com/show/166983/car-top-view.svg\" alt=\"Car\" />\n            <div id=\"obstacles\"></div>\n        </div>        \n    </div>\n    <div id=\"startScreen\">\n        <h1>HIGHWAY HANDS</h1>\n        <button id=\"startButton\">Start</button>\n        <div id=\"howToPlay\">\n            <h2>HOW TO PLAY</h2>\n            <p>\n                On the left side of the screen, you'll see your video. To make your car\n                move to the right lane, move your hand to the right in the screen. To make\n                your car move to the left lane, move your hand to the left, and to move\n                your car to the center lane, move your hand to the middle of the screen.\n            </p>\n        </div>\n    </div>\n    <div id=\"gameOver\" style=\"display: none;\">\n        <h1>Game Over!</h1>\n        <p>Your score: <span id=\"finalScore\">0</span></p>\n        <button id=\"restartButton\">Restart Game</button>\n    </div>\n    <script src=\"script.js\"></script>\n</body>\n</html>\n",
+      "status": "",
+      "output": "\n\n\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Car Game</title>\n    <script src=\"https://cdn.jsdelivr.net/npm/@tensorflow/tfjs\"></script>\n    <link href=\"https://fonts.googleapis.com/css2?family=Luckiest+Guy&amp;display=swap\" rel=\"stylesheet\">\n    <script src=\"https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose\"></script>\n\t \n<style>\n\n* {\n    margin: 0;\n    padding: 0;\n    box-sizing: border-box;\n}\n\nbody {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    flex-direction: column;\n    height: 100vh;\n    background-color: #e5a6fc;\n}\n\n#container {\n    display: flex;\n    align-items: flex-start;\n    position: relative;\n}\n\n#videoContainer {\n    position: relative;\n    width: 400px;\n    height: 300px;\n    overflow: hidden;\n}\n\n#game {\n    position: relative;\n    width: 327px;\n    height: 607px;\n    border: 4px solid #333;\n    overflow: hidden;\n    margin-left: 20px;\n    background: #565656;\n    z-index: 1;\n}\n\n#game::before,\n#game::after {\n    content: '';\n    position: absolute;\n    top: 0;\n    height: 100%;\n    width: 2.3px; \n    z-index: 2;\n}\n\n#game::before {\n    left: 33.33%;\n    background-image: linear-gradient(to bottom, white 50%, transparent 50%);\n    background-size: 0.6rem 3.7rem; \n}\n\n#game::after {\n    left: 66.66%;\n    background-image: linear-gradient(to bottom, white 50%, transparent 50%);\n    background-size: 0.6rem 3.7rem; \n}\n\n#score {\n    font-size: 24px; \n    color: #fffcfc; \n    position: absolute;\n    top: 10px;\n    left: 50%;\n    transform: translateX(-50%);\n    z-index: 10;\n    display: none;\n}\n\n#car {\n    position: absolute;\n    bottom: 20px;\n    left: 120px; \n    width: 55px; \n    height: 90px; \n    object-fit: cover;\n    overflow: hidden;\n}\n\n\n\n.obstacle {\n    position: absolute;\n    width: 55px; \n    height: 90px;\n    background-image: url('https://static.thenounproject.com/png/3914609-200.png'); /* Car image */\n    background-size: cover;\n    background-position: center;\n    background-repeat: no-repeat;\n    transform: scaleY(-1);\n}\n\n\nvideo {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n}\n\n.lane {\n    position: absolute;\n    width: 33.33%;\n    height: 100%;\n    opacity: 0;\n}\n\n#leftLane {\n    background-color: rgba(0, 255, 0, 0.5);\n    left: 0;\n}\n\n#middleLane {\n    background-color: rgba(255, 255, 0, 0.5);\n    left: 33.33%;\n}\n\n#rightLane {\n    background-color: rgba(255, 0, 0, 0.5);\n    left: 66.66%;\n}\n\n#startScreen, #gameOver {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center;\n    height: 100vh;\n    background-color: #e5a6fc;\n}\n\n#startButton, #restartButton {\n    padding: 10px 20px;\n    font-size: 16px;\n    cursor: pointer;\n    background-color: #f471b2; \n    margin-top: 20px;\n    margin-bottom: 33px;\n}\n\n#gameOver {\n    display: flex;\n    flex-direction: column;\n    justify-content: center;\n    align-items: center;\n    height: 100vh;\n    background-color: #e5a6fc;\n    text-align: center; \n}\n\n#gameOver h1 {\n    font-size: 2.5rem; \n    color: #333; \n    margin-bottom: 20px; \n    font-family: 'Luckiest Guy', cursive;\n}\n\n#finalScore {\n    font-size: 2rem; \n    font-weight: bold;\n    color: #000000; \n    margin-bottom: 30px;\n}\n\n#howToPlay {\n    margin-top: 20px;\n    text-align: justify; \n    max-width: 600px; \n    margin-top: 40px;\n  \tfont-size: 0.99rem;\n\tfont-family: 'Luckiest Guy', cursive; \n}\n\n#howToPlay h2 {\n    margin-bottom: 10px; \n    font-size: 1.99rem;\n\tfont-family: 'Luckiest Guy', cursive; \n}\n\n#howToPlay p {\n    line-height: 1.5; \n    color: #333; \n    font-size: 0.99rem;\n\tfont-family: 'Luckiest Guy', cursive; \n}\n\n\n#startScreen h1 {\n    font-size: 5rem; \n    color: #333; \n    margin-bottom: 20px; \n    font-family: 'Luckiest Guy', cursive; \n}\n\n#startButton, #restartButton {\n    padding: 15px 30px; \n    font-size: 18px; \n    color: #fff;\n    border: none; \n    border-radius: 5px;\n    cursor: pointer;\n    transition: background-color 0.3s; \n}\n\n#startButton:hover {\n    background-color: #ff1493; \n}\n#restartButton:hover {\n    background-color: #ff1493; \n}\n</style>\n\n\n    <div id=\"container\">\n        <div id=\"videoContainer\" style=\"display: none;\">\n            <video id=\"video\" autoplay=\"\"></video>\n            <div class=\"lane\" id=\"leftLane\"></div>\n            <div class=\"lane\" id=\"middleLane\"></div>\n            <div class=\"lane\" id=\"rightLane\"></div>\n        </div>\n        <div id=\"game\" style=\"display: none;\">\n            <div id=\"score\">Score: 0</div>\n            <img id=\"car\" src=\"https://www.svgrepo.com/show/166983/car-top-view.svg\" alt=\"Car\">\n            <div id=\"obstacles\"></div>\n        </div>        \n    </div>\n    <div id=\"startScreen\">\n        <h1>HIGHWAY HANDS</h1>\n        <button id=\"startButton\">Start</button>\n        <div id=\"howToPlay\">\n            <h2>HOW TO PLAY</h2>\n            <p>\n                On the left side of the screen, you'll see your video. To make your car\n                move to the right lane, move your hand to the right in the screen. To make\n                your car move to the left lane, move your hand to the left, and to move\n                your car to the center lane, move your hand to the middle of the screen.\n            </p>\n        </div>\n    </div>\n    <div id=\"gameOver\" style=\"display: none;\">\n        <h1>Game Over!</h1>\n        <p>Your score: <span id=\"finalScore\">0</span></p>\n        <button id=\"restartButton\">Restart Game</button>\n    </div>\n    <script src=\"script.js\"></script>\n\n\n",
+      "type": "html"
+    },
+    {
+      "code": "scrib.loadScript(\"https://cdn.jsdelivr.net/npm/@tensorflow-models/handpose\");\nscrib.loadScript(\"https://cdn.jsdelivr.net/npm/@tensorflow/tfjs\");",
+      "status": "[25]<br><span style=\"font-size:8px\">16ms<span></span></span>",
+      "output": "",
+      "type": "code"
+    },
+    {
+      "code": "//camera\nif (scrib.isSandboxed()) {\n    alert(\"Please take it out of sandbox by clicking the red button on the top right corner\");\n}\n\nconst video = document.getElementById('video');\n\nnavigator.mediaDevices.getUserMedia({ video: true })\n    .then((cameraStream) => {\n        video.srcObject = cameraStream;\n        video.play();\n    })\n    .catch((error) => {\n        scrib.show('Error accessing camera:', error.message);\n    });",
+      "status": "[26]<br><span style=\"font-size:8px\">43ms<span></span></span>",
+      "output": "",
+      "type": "code"
+    },
+    {
+      "code": "const game = document.getElementById('game');\nconst car = document.getElementById('car');\nconst obstacles = document.getElementById('obstacles');\nconst scoreDisplay = document.getElementById('score');\nconst startScreen = document.getElementById('startScreen');\nconst gameOverScreen = document.getElementById('gameOver');\nconst finalScoreDisplay = document.getElementById('finalScore');\nconst videoContainer = document.getElementById('videoContainer');\n\nlet carPosition = 1; \nconst laneWidth = 109; \nconst carHeight = 90; \nconst minObstacleGap = 190; // Minimum vertical gap between obstacles\nlet score = 0;\nlet gameInterval;\nlet obstacleSpeed = 2;\nlet activeObstacles = [];\nlet obstacleCreationInterval = 4000; //frequency \n\nasync function startGame() {\n    score = 0;\n    obstacleSpeed = 2; //speed\n    activeObstacles = [];\n    updateScore();\n    carPosition = 1; \n    car.style.left = `${carPosition * laneWidth + (laneWidth - 55) / 2}px`;\n    obstacles.innerHTML = '';\n    game.style.display = 'block';\n    startScreen.style.display = 'none';\n    gameOverScreen.style.display = 'none';\n    scoreDisplay.style.display = 'block'; \n    videoContainer.style.display = 'block'; \n\n    // Set up video streaming\n    const video = document.getElementById('video');\n    const stream = await navigator.mediaDevices.getUserMedia({ video: true });\n    video.srcObject = stream;\n    video.play();\n\n    gameInterval = setInterval(createObstacles, obstacleCreationInterval);\n    detectHands(video);\n}\n\nfunction detectHands(video) {\n    handpose.load().then(model => {\n        setInterval(async () => {\n            const predictions = await model.estimateHands(video);\n            if (predictions.length > 0) {\n                const hand = predictions[0].landmarks;\n                const x = hand[0][0]; \n\n                \n                if (x < video.clientWidth / 3) {\n                    carPosition = 0; // Left lane\n                } else if (x < (video.clientWidth / 3) * 2) {\n                    carPosition = 1; // Middle lane\n                } else {\n                    carPosition = 2; // Right lane\n                }\n\n                car.style.left = `${carPosition * laneWidth + (laneWidth - 55) / 2}px`;\n            }\n        }, 100);\n    });\n}\n\nfunction updateScore() {\n    scoreDisplay.textContent = `Score: ${score}`;\n}\n\nfunction restartGame() {\n    score = 0;\n    obstacleSpeed = 2;\n    activeObstacles = [];\n    updateScore();\n    carPosition = 1;\n    car.style.left = `${carPosition * laneWidth + (laneWidth - 55) / 2}px`;\n    obstacles.innerHTML = '';\n    gameOverScreen.style.display = 'none';\n    scoreDisplay.style.display = 'block'; \n    videoContainer.style.display = 'block'; \n    game.style.display = 'block';\n\n    gameInterval = setInterval(createObstacles, obstacleCreationInterval);\n}\n\nfunction createObstacles() {\n    const lanesOccupied = [];\n    const lastObstacleTop = activeObstacles.length ? parseInt(activeObstacles[activeObstacles.length - 1].style.top) : game.offsetHeight;\n\n    // Check if there's enough space to create a new obstacle\n    if (lastObstacleTop > minObstacleGap) {\n        for (let i = 0; i < 2; i++) {\n            let randomLane;\n\n            do {\n                randomLane = Math.floor(Math.random() * 3);\n            } while (lanesOccupied.includes(randomLane));\n\n            lanesOccupied.push(randomLane);\n\n            const obstacle = document.createElement('div');\n            obstacle.classList.add('obstacle');\n            obstacle.style.left = `${randomLane * laneWidth + (laneWidth - 55) / 2}px`;\n            obstacle.style.top = '0px';\n            obstacles.appendChild(obstacle);\n            activeObstacles.push(obstacle);\n            moveObstacle(obstacle);\n        }\n    }\n}\n\nfunction moveObstacle(obstacle) {\n    let obstacleInterval = setInterval(() => {\n        const obstacleTop = parseInt(obstacle.style.top);\n        const carBottom = game.offsetHeight - 20; // Adjust car's bottom position\n        const carTop = carBottom - carHeight;\n        const carLeft = parseInt(car.style.left);\n        const obstacleLeft = parseInt(obstacle.style.left);\n\n        // Remove obstacles that have moved out of view\n        if (obstacleTop > game.offsetHeight) {\n            clearInterval(obstacleInterval);\n            obstacles.removeChild(obstacle);\n            activeObstacles = activeObstacles.filter(o => o !== obstacle);\n            score++;\n            updateScore();\n\n            if (score % 5 === 0) {\n                obstacleSpeed += 0.33; // Increase speed every 5 points \n            }\n        } \n        // Collision logic: ensure obstacle is not already below the car\n        else if (\n            obstacleTop + 90 >= carTop &&\n            obstacleTop < carBottom &&\n            obstacleLeft === carLeft &&\n            obstacleTop < carBottom\n        ) {\n            clearInterval(obstacleInterval);\n            game.style.display = 'none';\n            gameOverScreen.style.display = 'block';\n            finalScoreDisplay.textContent = score;\n            scoreDisplay.style.display = 'none'; // Hide score on game over\n            videoContainer.style.display = 'none'; // Hide video on game over\n            clearInterval(gameInterval);\n        } \n        // Move the obstacle down\n        else {\n            obstacle.style.top = `${obstacleTop + obstacleSpeed}px`;\n        }\n    }, 20);\n}\n\ndocument.getElementById('startButton').addEventListener('click', startGame);\ndocument.getElementById('restartButton').addEventListener('click', restartGame);\n",
+      "status": "[27]<br><span style=\"font-size:8px\">0ms<span></span></span>",
+      "output": "",
+      "type": "code"
+    }
+  ],
+  "source": "https://github.com/gopi-suvanam/jsnb",
+  "run_on_load": false
 }
-
-body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    background-color: #e5a6fc;
-    font-family: 'Fredoka One', cursive; 
-}
-
-#container {
-    display: flex;
-    align-items: flex-start;
-    position: relative;
-}
-
-#videoContainer {
-    position: relative;
-    width: 400px;
-    height: 300px;
-    overflow: hidden;
-}
-
-#game {
-    position: relative;
-    width: 327px;
-    height: 607px;
-    border: 4px solid #333;
-    overflow: hidden;
-    margin-left: 20px;
-    background: #565656;
-    z-index: 1;
-}
-
-#game::before,
-#game::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    height: 100%;
-    width: 2.3px; 
-    z-index: 2;
-}
-
-#game::before {
-    left: 33.33%;
-    background-image: linear-gradient(to bottom, white 50%, transparent 50%);
-    background-size: 0.6rem 3.7rem; 
-}
-
-#game::after {
-    left: 66.66%;
-    background-image: linear-gradient(to bottom, white 50%, transparent 50%);
-    background-size: 0.6rem 3.7rem; 
-}
-
-#score {
-    font-size: 24px; 
-    color: #fffcfc; 
-    position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-    display: none;
-}
-
-#car {
-    position: absolute;
-    bottom: 20px;
-    left: 120px; 
-    width: 55px; 
-    height: 90px; 
-    object-fit: cover;
-    overflow: hidden;
-}
-
-
-
-.obstacle {
-    position: absolute;
-    width: 55px; 
-    height: 90px;
-    background-image: url('https://static.thenounproject.com/png/3914609-200.png'); /* Car image */
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    transform: scaleY(-1);
-}
-
-
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.lane {
-    position: absolute;
-    width: 33.33%;
-    height: 100%;
-    opacity: 0;
-}
-
-#leftLane {
-    background-color: rgba(0, 255, 0, 0.5);
-    left: 0;
-}
-
-#middleLane {
-    background-color: rgba(255, 255, 0, 0.5);
-    left: 33.33%;
-}
-
-#rightLane {
-    background-color: rgba(255, 0, 0, 0.5);
-    left: 66.66%;
-}
-
-#startScreen, #gameOver {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #e5a6fc;
-}
-
-#startButton, #restartButton {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #f471b2; 
-    margin-top: 20px;
-    margin-bottom: 33px;
-}
-
-#gameOver {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #e5a6fc;
-    text-align: center; 
-}
-
-#gameOver h1 {
-    font-size: 2.5rem; 
-    color: #333; 
-    margin-bottom: 20px; 
-    font-family: 'Luckiest Guy', cursive;
-}
-
-#finalScore {
-    font-size: 2rem; 
-    font-weight: bold;
-    color: #000000; 
-    margin-bottom: 30px;
-}
-
-#howToPlay {
-    margin-top: 20px;
-    text-align: justify; 
-    max-width: 600px; 
-    margin-top: 40px;
-}
-
-#howToPlay h2 {
-    margin-bottom: 10px; 
-}
-
-#howToPlay p {
-    line-height: 1.5; 
-    color: #333; 
-    font-size: 1.2rem; 
-}
-
-
-#startScreen h1 {
-    font-size: 3rem; 
-    color: #333; 
-    margin-bottom: 20px; 
-    font-family: 'Luckiest Guy', cursive; 
-}
-
-#startButton, #restartButton {
-    padding: 15px 30px; 
-    font-size: 18px; 
-    color: #fff;
-    border: none; 
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s; 
-}
-
-#startButton:hover {
-    background-color: #ff1493; 
-}
-#restartButton:hover {
-    background-color: #ff1493; 
-}
-</style>
-</head>
-<body>
-    <div id="container">
-        <div id="videoContainer" style="display: none;">
-            <video id="video" autoplay></video>
-            <div class="lane" id="leftLane"></div>
-            <div class="lane" id="middleLane"></div>
-            <div class="lane" id="rightLane"></div>
-        </div>
-        <div id="game" style="display: none;">
-            <div id="score">Score: 0</div>
-            <img id="car" src="https://www.svgrepo.com/show/166983/car-top-view.svg" alt="Car" />
-            <div id="obstacles"></div>
-        </div>        
-    </div>
-    <div id="startScreen">
-        <h1>Welcome to the Car Game!</h1>
-        <button id="startButton">Start Game</button>
-        <div id="howToPlay">
-            <h2>HOW TO PLAY</h2>
-            <p>
-                On the right side of the screen, you'll see your video. To make your car
-                move to the right lane, move your hand to the right in the screen. To make
-                your car move to the left lane, move your hand to the left, and to move
-                your car to the center lane, move your hand to the middle of the screen.
-            </p>
-        </div>
-    </div>
-    <div id="gameOver" style="display: none;">
-        <h1>Game Over!</h1>
-        <p>Your score: <span id="finalScore">0</span></p>
-        <button id="restartButton">Restart Game</button>
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
